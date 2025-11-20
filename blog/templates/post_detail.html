@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ post.title }}</title>
+</head>
+<body>
+
+    <a href="/">← Back to Home</a>
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.content }}</p>
+
+    <hr>
+
+    <h2>Comments</h2>
+
+    {% for comment in comments %}
+        <p><strong>{{ comment.user.username }}</strong> • {{ comment.created_at }}</p>
+        <p>{{ comment.body }}</p>
+        <hr>
+    {% empty %}
+        <p>No comments yet. Be the first!</p>
+    {% endfor %}
+
+    <hr>
+
+    {% if user.is_authenticated %}
+        <h3>Add a Comment</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <textarea name="body" required placeholder="Write your comment here..."></textarea><br>
+            <button type="submit">Post Comment</button>
+        </form>
+    {% else %}
+        <p>You must be <a href="{% url 'login' %}">logged in</a> to comment.</p>
+    {% endif %}
+
+    {% for comment in comments %}
+        <p><strong>{{ comment.user.username }}</strong> • {{ comment.created_at }}</p>
+        <p>{{ comment.body }}</p>
+
+        {% if user == comment.user %}
+            <form action="{% url 'delete_comment' comment.id %}" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        {% endif %}
+
+        <hr>
+    {% endfor %}
+
+
+</body>
+</html>
